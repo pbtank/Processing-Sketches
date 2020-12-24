@@ -1,108 +1,78 @@
-void mousePressed() {
-    
-  released = false;
-  
-  /////////////////////////cube
-  if ((mouseX>0.05*width) && (mouseX<0.95*width) && 
-      (mouseY<(height-0.05*width)) && (mouseY>(height-0.05*width)-width*0.9)) {
-    cube = color(9,125,170);
-    isCube = true;
-  }
-  
-  ///////////////////////zo
-  if ((mouseX>width*0.05) && (mouseX<(width*0.05)+80) && 
-      (mouseY<(height-width)) && (mouseY>(height-width)-80)) {
-    zo = color(9,125,170);
-    isZo = true;
-  }
-  
-  /////////////////////y
-  if ((mouseX>(width*0.075)+80) && (mouseX<(width*0.075)+240) && 
-      (mouseY<(height-width)) && (mouseY>(height-width)-80)) {
-    y = color(9,125,170);  
-    isY = true;
-  }
-  
-  ////////////////////x
-  if ((mouseX>width*0.05) && (mouseX<(width*0.05)+80) && 
-      (mouseY<(height-width*1.025)-80) && (mouseY>(height-width*1.025)-240)) {
-    x = color(9, 125, 170); 
-    isX = true;
-  }
-  
-  //////////////////z
-  if ((mouseX>(width*0.075)+80) && (mouseX<(width*0.075)+240) && 
-    (mouseY<(height-width*1.025)-80) && (mouseY>(height-width*1.025)-240)) {
-    z = color(9, 125, 170);
-    isZ = true;
-  }
-  
-  //////////////////fit
-  if (dist(mouseX, mouseY, (width*0.125)+300, (height-width)-60)<60) {
-    fit = color(9, 125, 170);
-    isFit = true;
-  }
-  
-  ////////////////////f8
-  if (dist(mouseX, mouseY, (width*0.175)+420, (height-width)-60)<60) {
-    f8 = color(9, 125, 170);
-    isF8 = true;
-  }
-  
-  //////////////////home
-  if (dist(mouseX, mouseY, (width*0.125)+300, (height-width*1.05)-180)<60) {
-    home = color(9, 125, 170);
-    isHome = true;
-  }
-  
-  //////////////////end
-  if (dist(mouseX, mouseY, (width*0.175)+420, (height-width*1.05)-180)<60) {
-    end = color(9, 125, 170);
-    isEnd = true;
+// UI methods
+
+void mousePressed()
+
+{
+  if (mouseY <= 100 && mouseX > 0 && mouseX < width/3)
+    KetaiKeyboard.toggle(this);                           // 1
+  else if 
+    (mouseY <= 100 && mouseX > width/3 && mouseX < 2*(width/3)) //config button
+    isConfiguring=true;                                   // 2
+  else if 
+    (mouseY <= 100 && mouseX >  2*(width/3) && mouseX < width) // draw button
+  {
+    if (isConfiguring)
+    {
+      background(78, 93, 75);
+      isConfiguring=false;
+    }
   }
 }
 
-void mouseReleased() {
-  cube = x = y = z = zo = fit = f8 = home = end = color(#C0C0C0);
-  isCube = isX = isY = isZ = isZo = isFit = isF8 = isHome = isEnd = false;
-  released = true;
+void keyPressed() {
+  if (key =='c')
+  {
+    //If we have not discovered any devices, try prior paired devices
+    if (bt.getDiscoveredDeviceNames().size() > 0)
+      connectionList = new KetaiList(this, bt.getDiscoveredDeviceNames());  // 3
+    else if (bt.getPairedDeviceNames().size() > 0)
+      connectionList = new KetaiList(this, bt.getPairedDeviceNames());  // 4
+  }
+
+  else if (key == 'd')
+    bt.discoverDevices();                                 // 5
+  else if (key == 'b')
+    bt.makeDiscoverable();                                // 6
 }
 
-void drawUI() {
-  ////////////////////////buttons///////////////////////////////////
-  strokeWeight(4);
-  fill(cube);
-  rect(width*0.05, height-(width*0.05), width*0.9, -width*0.9, 10, 10, 10, 10);   //cube
-  fill(zo);
-  rect(width*0.05, height-width, 80, -80, 0, 0, 0, 10);                         //zo 
-  fill(y);
-  rect((width*0.075)+80, height-width, 160, -80, 0, 0, 10, 0);                   //y
-  fill(x);
-  rect(width*0.05, height-(width*1.025)-80, 80, -160, 10, 0, 0, 0);                //x
-  fill(z);
-  rect((width*0.075)+80, height-width*1.025-80, 160, -160, 0, 10, 0, 0);          //z
-  fill(fit);
-  ellipse((width*0.125)+300, (height-width)-60, 120, 120);                       //fit
-  fill(f8);
-  ellipse((width*0.175)+420, (height-width)-60, 120, 120);                     //f8
-    fill(home);
-  ellipse((width*0.125)+300, (height-width*1.05)-180, 120, 120);                 //home
-  fill(end);
-  ellipse((width*0.175)+420, (height-width*1.05)-180, 120, 120);                 //end
-  
-  /////////////////////////////////////////////////////
-  
-  ///////////////////text//////////////////////////////////
-  textSize(60);
+void drawUI()
+{
+  pushStyle();                                            // 7
   fill(0);
-  textAlign(CENTER);
-  text("X", (width*0.05)+40, height-(width*1.025)-140);
-  text("Y", (width*0.075)+160, (height-width)-20);
-  text("Z", (width*0.075)+160, height-(width*1.025)-140);
-  text("Z0", (width*0.05)+40, (height-width)-20);
-  text("FIT", (width*0.125)+300, (height-width)-40);
-  text("F8", (width*0.175)+420, (height-width)-40);
-  textSize(40);
-  text("HOME", (width*0.125)+300, (height-width*1.05)-165);
-  text("END", (width*0.175)+420, (height-width*1.05)-165);
+  stroke(255);
+  rect(0, 0, width/3, 100);
+
+  if (isConfiguring)
+  {
+    noStroke();
+    fill(78, 93, 75);
+  }
+  else
+    fill(0);
+
+  rect(width/3, 0, width/3, 100);
+  if (!isConfiguring)
+  {  
+    noStroke();
+    fill(78, 93, 75);
+  }
+  else
+  {
+    fill(0);
+    stroke(255);
+  }
+  rect((width/3)*2, 0, width/3, 100);
+  fill(255);
+
+  text("Keyboard", 5, 70);                                // 8
+  text("Bluetooth", width/3+5, 70);                       // 9
+  text("Interact", width/3*2+5, 70);                      // 10
+  popStyle();
+}
+
+void onKetaiListSelection(KetaiList connectionList)       // 11
+{
+  String selection = connectionList.getSelection();       // 12
+  bt.connectToDeviceByName(selection);                    // 13
+  connectionList = null;                                  // 14
 }
