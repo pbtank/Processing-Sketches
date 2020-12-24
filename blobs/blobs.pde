@@ -9,7 +9,6 @@ import processing.video.*;
 
 import java.awt.AWTException;
 import java.awt.Robot;
-import java.awt.event.*;
 //int xx = 10, yy = 10;
 Robot robby;
 
@@ -18,32 +17,37 @@ Capture video;
 color trackColorR;
 color trackColorB;
 
-float distThreshold = 30;
 float thresholdR = 140;
-float thresholdB = 180;
-int mask = InputEvent.BUTTON1_DOWN_MASK;
+float thresholdB = 175;
+float distThreshold = 25;
 
-float lxx = 0;
-float lyy = 0;
+float Rsize;
+float Bsize;
 
-int[] rrectx;
-int[] rrecty;
-int[] brectx;
-int[] brecty;
+float Rrotx;
+float Brotx;
+float Rroty;
+float Broty;
+
+float Ztheta;
+float ltheta = 0;
+float dscale;
+float Ytheta;
+float Xtheta;
+
+ArrayList<Blob> Rblobs = new ArrayList<Blob>();
+ArrayList<Blob> Bblobs = new ArrayList<Blob>();
+
+//int button = InputEvent.BUTTON1_MASK;
 
 void setup() {
-  size(1280,720);
+  size(1280,720, P3D);
   String[] cameras = Capture.list();
   printArray(cameras);
   video = new Capture(this, cameras[8]);
   video.start();
   trackColorR = color(255, 0, 0);
   trackColorB = color(0, 255, 0);
-  
-  rrectx = new int[width];
-  rrecty = new int[height];
-  brectx = new int[width];
-  brecty = new int[height];
   
   try
   {
@@ -81,23 +85,18 @@ void keyPressed() {
 
 void draw() {
   video.loadPixels();
+  background(200);
   pushMatrix();
   scale(-1, 1);
   image(video, -width, 0);
   popMatrix();
   
-  //thresholdB = map(mouseX, 0, width, 0, 200);
-  //thresholdR = 140;
-  //thresholdB = 200;
+  Rblobs.clear();
+  Bblobs.clear();
   
-  int avgXR = 0;
-  int avgYR = 0;
-  int avgXB = 0;
-  int avgYB = 0;
-  
-  int countR = 0;
-  int countB = 0;
-  
+  //threshold = map(mouseX, 0, width, 0, 200);
+  //threshold = 140;
+    
   for (int x = 0; x < video.width; x++) {
     for (int y = 0; y < video.height; y++) {
       int loc = x + y * video.width;
@@ -116,80 +115,119 @@ void draw() {
       float dR = distsq(r1, g1, b1, r2, g2, b2);
       float dB = distsq(r1, g1, b1, r3, g3, b3);
       
-      if (dR < thresholdR*thresholdR) {
-        stroke(255);
-        strokeWeight(1);
-        point(width - x,y);
-        rrectx[x] = width - x;
-        rrecty[y] = y;
-        avgXR += x;
-        avgYR += y;
-        countR++;
+      if (dR < thresholdR * thresholdR) {
+        
+        boolean rfound = false;
+        for (Blob bR : Rblobs) {
+          if (bR.isNear(x, y)) {
+            bR.add(x, y);
+            rfound = true;
+            break;
+          }
+        }
+        
+        if (!rfound) {
+          Blob bR = new Blob(x, y);
+          Rblobs.add(bR);
+        }
       }
       
-      if (dB < thresholdB*thresholdB) {
-        stroke(255);
-        strokeWeight(1);
-        point(width - x,y);
-        brectx[x] = width - x;
-        brecty[y] = y;
-        avgXB += x;
-        avgYB += y;
-        countB++;
-      }
+      if (dB < thresholdB * thresholdB) {
+        
+        boolean bfound = false;
+        for (Blob bB : Bblobs) {
+          if (bB.isNear(x, y)) {
+            bB.add(x, y);
+            bfound = true;
+            break;
+          }
+        }
+        
+        if (!bfound) {
+          Blob bB = new Blob(x, y);
+          Bblobs.add(bB);
+        }
+      } 
     }
   }
-
-  if (countR > 1 && countB > 1) {
-    avgXR = avgXR / countR;
-    avgYR = avgYR / countR;
-    avgXB = avgXB / countB;
-    avgYB = avgYB / countB;
-
-    float xx = map((avgXR + avgXB) / 2, 0, width, -600, displayWidth+600);
-    float yy = map((avgYR + avgYB) / 2, 0, height, -600, displayHeight+600);
-    lxx = lerp(lxx, xx, 0.1);
-    lyy = lerp(lyy, yy, 0.1);
-    int XX = int(lxx);
-    int YY = int(lyy);
-    
-    
-    if (dist(avgXR, avgYR, avgXB, avgYB) < distThreshold) {
-      stroke(255, 255, 0);
-      strokeWeight(2);
-      noFill();
-      rectMode(CENTER);
-      rect(width - ((avgXR + avgXB) / 2), (avgYR + avgYB) / 2, 32, 64);
-      stroke(0, 255, 255);
-      ellipse(width - ((avgXR + avgXB) / 2), (avgYR + avgYB) / 2, 45, 45);
-      
-      robby.mouseMove(displayWidth - XX, YY);
-      robby.mousePress(mask);
-  } else {
-    
-    robby.mouseRelease(mask);
-    
-    fill(trackColorR);
-    strokeWeight(2);
-    stroke(0);
-    ellipse(width - avgXR, avgYR, 8, 8);
-    fill(trackColorB);
-    ellipse(width - avgXB, avgYB, 8, 8);
-    
-    rectMode(CENTER);
-    noFill();
-    stroke(trackColorR);
-    rect(width - avgXR, avgYR, 36, 36);
-    stroke(trackColorB);
-    rect(width - avgXB, avgYB, 36, 36);
-    
-    stroke(0, 255, 255);
-    line(width - avgXR, avgYR, width - avgXB, avgYB);
-    ellipse(width - ((avgXR + avgXB) / 2), (avgYR + avgYB) / 2, 5, 5);
-    
-    robby.mouseMove(displayWidth - XX, YY);
+  
+  for (Blob bR : Rblobs) {
+    if (bR.size() > 5000) {
+      Rsize = map(bR.size(), bR.size() - 5000, width*10, 0, height*0.5);
+      fill(trackColorR, 150);
+      bR.show();
+      Rroty = bR.recty();
+      Rrotx = width - bR.rectx(); 
+      ellipse (width - bR.rectx(), bR.recty(), 8, 8);
     }
   }
+  //ellipse (width - bR.rectx(), bR.recty(), 8, 8);
+  
+  for (Blob bB : Bblobs) {
+    if (bB.size() > 5000) {
+      Bsize = map(bB.size(), bB.size() - 5000, width*10, 0, height*0.5);
+      fill(trackColorB, 150);
+      bB.show();
+      Broty = bB.recty();
+      Brotx = width - bB.rectx();
+      ellipse (width - bB.rectx(), bB.recty(), 8, 8);
+    }
+  }
+  
+////////////////////Zrotation/////////////////////////
+  
+  line(Rrotx, Rroty, Brotx, Broty);
+  pushMatrix();
+  translate((Rrotx + Brotx)/2, (Rroty + Broty)/2);
+  Ztheta = atan2(Broty - (Rroty + Broty)/2, Brotx - (Rrotx + Brotx)/2);
+  popMatrix();
+  
+////////////////////Zrotation////////////////////////////////
+  
+
+////////////////////scale////////////////////////////////
+
+  dscale = map(dist(Brotx, Broty, Rrotx, Rroty), 0, width*0.6, 0, 2);
+
+////////////////////scale////////////////////////////////
+
+////////////////////Yrotation////////////////////////////////
+
+  Ytheta = atan2(Bsize - Rsize, width*0.5);
+
+////////////////////Yrotation////////////////////////////////
+
+
+////////////////////Xrotation////////////////////////////////
+
+  pushMatrix();
+  Xtheta = map((Rroty + Broty)/2, 0, height, 0, 4*PI);
+  popMatrix();
+
+////////////////////Xrotation////////////////////////////////
+
+
+///////////////////////////3D/////////////////////////////////
+
+  pushMatrix();
+  translate(width/2, height/2, 250);
+  rotateX(-Xtheta);
+  rotateZ(Ztheta);
+  rotateY(Ytheta);
+  scale(dscale);
+  fill(0, 255, 0, 150);
+  rectMode(CENTER);
+  box(150);
+  stroke(0, 0, 255);
+  fill(0, 0, 255);
+  text("TANK", 0, 0, 150/2+1);
+  translate(0, -150/2, 0);
+  fill(255, 0, 0, 150);
+  sphere(150/2);
+  //line(0, 0, 0, 150);
+  popMatrix();
+  
+///////////////////////////3D/////////////////////////////////
   
   strokeWeight(1);
   fill(0);
@@ -198,6 +236,14 @@ void draw() {
   text("distance threshold:" + distThreshold , width-20, 20);
   text("color r threshold:" + thresholdR , width-20, 40);
   text("color b threshold:" + thresholdB , width-20, 60);
+  text("Rsize:" + Rsize , width-20, 80);
+  text("Bsize:" + Bsize , width-20, 100);
+  //text("theta:" + theta , width-20, 120);
+}
+
+float distsq(float x1, float y1, float x2, float y2) {
+  float d = (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1);
+  return d;
 }
 
 float distsq(float x1, float y1, float z1, float x2, float y2, float z2) {
@@ -207,5 +253,5 @@ float distsq(float x1, float y1, float z1, float x2, float y2, float z2) {
 
 //void mousePressed() {
 //  int loc = mouseX + mouseY*video.width;
-//  trackColorB = video.pixels[loc];
+//  trackColor = video.pixels[loc];
 //}
