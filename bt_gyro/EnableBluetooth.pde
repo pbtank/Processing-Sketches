@@ -1,9 +1,8 @@
-
-void onCreate(Bundle savedInstanceState) {                // 1
+void onCreate(Bundle savedInstanceState) {
   super.onCreate(savedInstanceState);
-  bt = new KetaiBluetooth(this);                          // 2
+  bt = new KetaiBluetooth(this);
 }
 
 void onActivityResult(int requestCode, int resultCode, Intent data) {
-  bt.onActivityResult(requestCode, resultCode, data);     // 3
+  bt.onActivityResult(requestCode, resultCode, data);
 }

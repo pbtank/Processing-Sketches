@@ -1,4 +1,6 @@
 void mousePressed() {
+    
+  released = false;
   
   /////////////////////////cube
   if ((mouseX>0.05*width) && (mouseX<0.95*width) && 
@@ -61,21 +63,9 @@ void mousePressed() {
 }
 
 void mouseReleased() {
-  cube = color(#C0C0C0);
-  x = color(#C0C0C0);
-  y = color(#C0C0C0);
-  z = color(#C0C0C0);
-  zo = color(#C0C0C0);
-  fit = color(#C0C0C0);
-  f8 = color(#C0C0C0);
-  home = color(#C0C0C0);
-  end = color(#C0C0C0);
-  
-  isCube = false;
-  isX=isY=isZ = false;
-  isZo = false;
-  isFit=isF8 = false;
-  isHome=isEnd = false;
+  cube = x = y = z = zo = fit = f8 = home = end = color(#C0C0C0);
+  isCube = isX = isY = isZ = isZo = isFit = isF8 = isHome = isEnd = false;
+  released = true;
 }
 
 void drawUI() {
@@ -115,4 +105,4 @@ void drawUI() {
   textSize(40);
   text("HOME", (width*0.125)+300, (height-width*1.05)-165);
   text("END", (width*0.175)+420, (height-width*1.05)-165);
-}    
+}
