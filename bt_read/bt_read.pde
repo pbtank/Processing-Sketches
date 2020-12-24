@@ -7,10 +7,8 @@
 
 import processing.serial.*;
 
-Serial myPort;  
+Serial myPort;
 String val;
-int state = 2;
-int index = 9;
 
 float rotX, rotY, rotZ = 0;
 float scale = 1;
@@ -27,64 +25,59 @@ void setup() {
 }
 
 void draw() {
-  background(255);  
-  if (myPort.available() > 0) {
+  background(255);
+  if(myPort.available() > 0) {
     if (val != null) {
       String[] data = split(val, ",");
-      state = int(trim(data[0]));
-      index = int(trim(data[1]));
-
-      if (state == 1) {
-        switch(index) {
-          case 0: {
-            data[4] = data[4].replace(';', ' ');
-            lrotX = float(trim(data[2]));
-            lrotY = float(trim(data[3]));
-            lrotZ = float(trim(data[4])); }
-            break;
-          case 1:
-            data[4] = data[4].replace(';', ' ');
-            lrotX = float(trim(data[2]));
-            break;
-          case 2:
-            data[4] = data[4].replace(';', ' ');
-            lrotY = float(trim(data[3]));
-            break;
-          case 3:
-            data[4] = data[4].replace(';', ' ');
-            lrotZ = float(trim(data[4]));
-            break;  
-          case 4:
-            data[4] = data[4].replace(';', ' ');
-            lscale = float(trim(data[2]));
-            break;
-          case 5:
-            scale = 1;
-            lscale = lerp(lscale, scale, 0.1);
-            break;
-          case 6:
-            break;
-          case 7:
-            rotX = 0;
-            rotY = 0;
-            rotZ = 0;
-            lrotX = lerp(lrotX, rotX, 0.1);
-            lrotY = lerp(lrotY, rotY, 0.1);
-            lrotZ = lerp(lrotZ, rotZ, 0.1);
-            break;  
-          case 8:
-            rotX = 30;
-            rotY = 0;
-            rotZ = 60;
-            lrotX = lerp(lrotX, rotX, 0.1);
-            lrotY = lerp(lrotY, rotY, 0.1);
-            lrotZ = lerp(lrotZ, rotZ, 0.1);     
-        }
-        println("pressed");
-      } else if (state == 2) {
-        println("released");
+      int index = int(trim(data[0]));
+      
+      switch(index) {
+        case '0': {
+          data[3] = data[3].replace(';', ' ');
+          lrotX = float(trim(data[1]));
+          lrotY = float(trim(data[2]));
+          lrotZ = float(trim(data[3])); }
+          break;
+        case '1':
+          data[3] = data[3].replace(';', ' ');
+          lrotX = float(trim(data[1]));
+          break;
+        case '2':
+          data[3] = data[3].replace(';', ' ');
+          lrotY = float(trim(data[2]));
+          break;
+        case '3':
+          data[3] = data[3].replace(';', ' ');
+          lrotZ = float(trim(data[3]));
+          break;  
+        case '4':
+          data[3] = data[3].replace(';', ' ');
+          lscale = float(trim(data[1]));
+          break;
+        case '5':
+          scale = 1;
+          lscale = lerp(lscale, scale, 0.1);
+          break;
+        case '6':
+          break;
+        case '7':
+          rotX = 0;
+          rotY = 0;
+          rotZ = 0;
+          lrotX = lerp(lrotX, rotX, 0.1);
+          lrotY = lerp(lrotY, rotY, 0.1);
+          lrotZ = lerp(lrotZ, rotZ, 0.1);
+          break;  
+        case '8':
+          rotX = 30;
+          rotY = 0;
+          rotZ = 60;
+          lrotX = lerp(lrotX, rotX, 0.1);
+          lrotY = lerp(lrotY, rotY, 0.1);
+          lrotZ = lerp(lrotZ, rotZ, 0.1);
+          break;  
       }
-      //println(rotX, rotY, rotZ);
+      println(rotX, rotY, rotZ);
     }
   }
   
@@ -92,7 +85,6 @@ void draw() {
   
   //pushMatrix();
   translate(width/2, height/2, 250);
-  pushMatrix();
   rotateX(radians(-lrotX));
   rotateZ(radians(lrotY));
   rotateY(radians(lrotZ));
@@ -106,8 +98,6 @@ void draw() {
   translate(0, -150/2, 0);
   fill(255, 0, 0, 150);
   sphere(150/2);
-  popMatrix();
-
   //line(0, 0, 0, 150);
   //popMatrix();
   
@@ -119,12 +109,3 @@ void serialEvent(Serial myPort) {
   val = myPort.readStringUntil((byte)ch);
 }
 
-//float f(String s) {
-//  if (s.indexOf("+") >= 0) {
-//    s.replace('+', ' ');  
-//  } else if (s.indexOf("-") >= 0) {
-//    s.replace('-', ' ');
-//  }
-//  float f = float(trim(s));
-//  return f;
-//}
