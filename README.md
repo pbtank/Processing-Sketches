@@ -1,5 +1,5 @@
 # Processing-Sketches
-All the **processing** sketches (.pde files) on which i've worked or am working on.
+All the **processing** sketches (.pde files) on which I've worked or am working on.
 
 I will try to update every project whenever I get time, but *not promise* to do so.
 
