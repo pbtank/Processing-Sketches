@@ -1,3 +1,10 @@
+//|-----------------------------------------------------------|
+//|Mode: Android/Java                                         |
+//|Work by Tank Priyansu                                      |
+//|If you have any query or suggestions regarding this project| 
+//|feel free to contact me.                                   |
+//|-----------------------------------------------------------|
+
 import ketai.camera.*;
 
 KetaiCamera cam;
