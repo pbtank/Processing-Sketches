@@ -11,8 +11,10 @@ float tau, dx;
 float alpha = 100;
 float dt = 1;
 
+float rotX, rotY, rotZ = 0;
+
 void setup() {
-  size(1200, 600);
+  size(1200, 600, P3D);
   dx = width/n;
   tau = min(0.5, (alpha*dt)/(dx*dx));
   t = new float[n][2];
@@ -23,8 +25,20 @@ void setup() {
   
 }
 
+void keyPressed() {
+  if (key == CODED) {
+    if (key == 'U') {
+      rotX += 10;
+    }
+  }
+}
+
 void draw() {
   background(200);
+  translate(0,0,-200);
+  rotateX(radians(rotX));
+  rotateY(radians(rotY));
+  rotateZ(radians(rotZ));
   
   if(mousePressed) {
     solve(t);
@@ -32,38 +46,3 @@ void draw() {
   plot(t);
    
 }
-
-
-//int n = 100;
-//float[] T, x, t;
-//float tau, dx;
-//float alpha = 100;
-//float dt = 30;
-
-//void setup() {
-//  size(1200, 600);
-//  dx = width/n;
-//  tau = min(0.5, (alpha*dt)/(dx*dx));
-//  T = new float[n];
-//  x = new float[2];
-//  t = new float[2];
-//  x[0] = 60;
-//  t[0] = 600;
-//  x[1] = 25;
-//  t[1] = 200;
-//  in(T);
-//  setTemp(T, 500);
-//  insBoundary(T);
-//  ctBoundary(T, 100, 200);
-//  //frameRate(2);
-//  //for (int i=1; i<T.length; i++) {
-//  //  T[i] = 500;
-//  //}
-//}
-
-//void draw() {
-//  background(200);
-//  //frameRate(int(map(mouseX, 0, width, 1, 240)));
-//  solve(T, x, t);
-//  //update(T);
-//}
