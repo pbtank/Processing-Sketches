@@ -7,68 +7,59 @@
 
 import ketai.sensors.*;
 KetaiSensor sensor;
-PVector magneticField, accelerometer, rotation;
-float light, proximity;
+float accelerometerX, accelerometerY, accelerometerZ;
+float velx = 0;
+float vely = 0;
+float px = displayWidth/2;
+float py = displayHeight/2;
 
 void setup()  {
   sensor = new KetaiSensor(this);
   sensor.start();
-  sensor.list();
-  accelerometer = new PVector();
-  magneticField = new PVector();
-  rotation = new PVector();
+  //sensor.list();
   orientation(PORTRAIT);                       // 1
-  textAlign(CENTER, CENTER);
-  textSize(72);
+  //textAlign(CENTER, CENTER);
+  //textSize(72);
 }
 void draw()
 {
-  background(78, 93, 75);
-  text("Accelerometer :" + "\n"
-    + "x: " + nfp(accelerometer.x, 1, 2) + "\n"
-    + "y: " + nfp(accelerometer.y, 1, 2) + "\n"
-    + "z: " + nfp(accelerometer.z, 1, 2) + "\n"
-    + "MagneticField :" + "\n"
-    + "x: " + nfp(magneticField.x, 1, 2) + "\n"
-    + "y: " + nfp(magneticField.y, 1, 2) + "\n"
-    + "z: " + nfp(magneticField.z, 1, 2) + "\n"
-    + "Gyroscope :" + "\n"
-    + "x: " + nfp(rotation.x, 1, 2) + "\n"
-    + "y: " + nfp(rotation.y, 1, 2) + "\n"
-    + "z: " + nfp(rotation.z, 1, 2) + "\n"
-    + "Light Sensor : " + light + "\n"
-    + "Proximity Sensor : " + proximity + "\n"
-    , 20, 0, width, height);
+  background(200);
+  stroke(0);
+  fill(0);
+  ellipse(px,py,50,50);
+  
+  //px += int(accelerometerX)*-1; 
+  //py += int(accelerometerY); 
+  
+  if (px > displayWidth) {
+    px = displayWidth;
+  } else if (px < 0) {
+    px = 0;
+  } else {
+    velx += (int(accelerometerX)*100)*-1;
+    px += velx;
+  }
+  
+  if (py > displayHeight) {
+    py = displayHeight;
+  } else if (py < 0) {
+    py = 0;
+  } else {
+    vely += (int(accelerometerY)*100);
+    py += vely;
+  }
+  
+  println(px);
+  println(py);
+  println(accelerometerX*100);
+  println(accelerometerY*100);
+  
+  //pAccelerometer.set(accelerometer);
 }
 
-void onAccelerometerEvent(float x, float y, float z, long time, int accuracy)
+void onLinearAccelerationEvent(float x, float y, float z)
 {
-  accelerometer.set(x, y, z);
-}
-void onMagneticFieldEvent(float x, float y, float z, long time, int accuracy)  // 2
-{
-  magneticField.set(x, y, z);
-}
-
-void onGyroscopeEvent(float x, float y, float z) {
-  rotation.x = x;
-  rotation.y = y;
-  rotation.z = z;
-}
-
-void onLightEvent(float v)                      // 3
-{
-  light = v;
-}
-
-void onProximityEvent(float v)                  // 4
-{
-  proximity = v;
-}
-public void mousePressed() {                    // 5
-  if (sensor.isStarted())
-    sensor.stop();
-  else
-    sensor.start();
-  println("KetaiSensor isStarted: " + sensor.isStarted());
+  accelerometerX = x;
+  accelerometerY = y;
+  accelerometerZ = z;
 }
