@@ -1,10 +1,3 @@
-//|-----------------------------------------------------------|
-//|Mode: Android/Java                                         |
-//|Work by Tank Priyansu                                      |
-//|If you have any query or suggestions regarding this project| 
-//|feel free to contact me.                                   |
-//|-----------------------------------------------------------|
-
 import processing.serial.*;
 
 import java.awt.AWTException;
@@ -19,6 +12,14 @@ String val;
 int state = 2;
 int index = 9;
 int pcase = 0;
+<<<<<<< Updated upstream
+=======
+
+int pscale = 1;
+float amt;
+
+float pstate;
+>>>>>>> Stashed changes
 
 float rotX, rotY, rotZ = 0;
 float scale = 1;
@@ -27,7 +28,16 @@ int x, y;
 int h = displayHeight;
 int w = displayWidth;
 
+<<<<<<< Updated upstream
 int mask = InputEvent.BUTTON1_DOWN_MASK;
+=======
+int maskRotate = InputEvent.BUTTON2_DOWN_MASK;
+int maskCtrl = KeyEvent.VK_CONTROL;
+int maskF = KeyEvent.VK_F;
+int maskF8 = KeyEvent.VK_F8;
+int maskEnd = KeyEvent.VK_END;
+int maskHome = KeyEvent.VK_HOME;
+>>>>>>> Stashed changes
 
 void setup() {
   //size(1280, 720, P3D);
@@ -42,7 +52,11 @@ void setup() {
     println("Robot class not supported by your system!");
     exit();
   }
+<<<<<<< Updated upstream
   frameRate(3);
+=======
+  frameRate(60);
+>>>>>>> Stashed changes
 }
 
 void draw() {
@@ -66,6 +80,10 @@ void draw() {
               rotY = float(trim(data[3]));
               rotZ = float(trim(data[4]));
               x = int(map(rotY, 0, 180, 0, 500))+displayWidth/2;
+<<<<<<< Updated upstream
+=======
+              println(frameRate);
+>>>>>>> Stashed changes
               y = int(map(rotX, 0, 180, 0, 500))+displayHeight/2;
             }
             robby.mouseMove(x, y);
@@ -73,7 +91,11 @@ void draw() {
             break;
             
           case 1:
+<<<<<<< Updated upstream
             x = displayWidth-20;
+=======
+            x = displayWidth-400;
+>>>>>>> Stashed changes
             if (int((pcase-index)) != 0) {
               y = displayHeight/2;
             } else {
@@ -86,7 +108,11 @@ void draw() {
             break;
             
           case 2:
+<<<<<<< Updated upstream
             y = displayHeight-160;
+=======
+            y = displayHeight-100;
+>>>>>>> Stashed changes
             if ((pcase-index) != 0) {
               x = displayWidth/2;
             } else {
@@ -99,7 +125,11 @@ void draw() {
             break;
             
           case 3:
+<<<<<<< Updated upstream
             y = 160;
+=======
+            y = 240;
+>>>>>>> Stashed changes
             if ((pcase-index) != 0) {
               x = displayWidth/2;
             } else {
@@ -114,6 +144,7 @@ void draw() {
           case 4:
             data[4] = data[4].replace(';', ' ');
             scale = float(trim(data[2]));
+<<<<<<< Updated upstream
             break;
           case 5:
             scale = 1;
@@ -121,19 +152,58 @@ void draw() {
           case 6:
             break;
           case 7:
+=======
+            amt = (pscale-scale);
+            robby.mouseWheel(int(amt*5));
+            try{Thread.sleep(500);}catch(InterruptedException e) {};
+            println(amt);
+            break;
+          case 5:
+            scale = 1;
+            robby.keyPress(maskCtrl);
+            robby.keyPress(maskF);
+            robby.keyRelease(maskF);
+            robby.keyRelease(maskCtrl);
+            break;
+          case 6:
+            robby.keyPress(maskF8);
+            robby.keyRelease(maskF8);
+            break;
+          case 7:
+            robby.keyPress(maskHome);
+            robby.keyRelease(maskHome);
+>>>>>>> Stashed changes
             rotX = 0;
             rotY = 0;
             rotZ = 0;
             break;  
           case 8:
+<<<<<<< Updated upstream
+=======
+            robby.keyPress(maskEnd);
+            robby.keyRelease(maskEnd);
+>>>>>>> Stashed changes
             rotX = 30;
             rotY = 0;
             rotZ = 60;
         }
+<<<<<<< Updated upstream
         robby.mousePress(mask);
       } 
       if (state == 2) {
         robby.mouseRelease(mask);
+=======
+        if (pstate != 1) {
+          robby.mousePress(maskRotate);
+          pstate = 1;
+        }
+      } 
+      if (state == 2) {
+        if (pstate != 2) {
+          robby.mouseRelease(maskRotate);
+          pstate = 2;
+        }
+>>>>>>> Stashed changes
         //println("released");
       }
       //println(rotX, rotY, rotZ);
